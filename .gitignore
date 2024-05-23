@@ -1,0 +1,4 @@
+.terraform*
+terraform*
+tf_plan
+session-manager-plugin.deb

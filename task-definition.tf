@@ -1,4 +1,4 @@
-resource "aws_ecs_task_definition" "fargate_task" {
+resource "aws_ecs_task_definition" "task_rabbitmq" {
   family                   = "ecs-relatorio-fraude"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   network_mode             = "awsvpc"
@@ -8,17 +8,23 @@ resource "aws_ecs_task_definition" "fargate_task" {
 
   container_definitions = jsonencode([
     {
-      "name" : "rabbitmq-service",
+      "name" : "rabbitmq",
       "image" : "rabbitmq:3-management",
       "portMappings" : [
         {
-          "name" : "rabbitmq-service",
+          "name" : "rabbitmq-frontend",
           "containerPort" : 15672,
           "hostPort" : 15672,
           "protocol" : "tcp"
+        },
+        {
+          "name" : "rabbitmq-service",
+          "containerPort" : 5672,
+          "hostPort" : 5672,
+          "protocol" : "tcp"
         }
       ],
-      "essential" : false,
+      "essential" : true,
       "environment" : [
         {
           "name" : "RABBITMQ_DEFAULT_USER",
@@ -44,7 +50,7 @@ resource "aws_ecs_task_definition" "fargate_task" {
       }
     },
     {
-      "name" : "redis-service",
+      "name" : "redis",
       "image" : "redis/redis-stack",
       "portMappings" : [
         {
@@ -52,9 +58,15 @@ resource "aws_ecs_task_definition" "fargate_task" {
           "containerPort" : 6379,
           "hostPort" : 6379,
           "protocol" : "tcp"
+        },
+        {
+          "name" : "redis-frontend",
+          "containerPort" : 8001,
+          "hostPort" : 8001,
+          "protocol" : "tcp"
         }
       ],
-      "essential" : false,
+      "essential" : true,
       "environment" : [
         {
           "name" : "REDIS_ARGS",
@@ -76,7 +88,7 @@ resource "aws_ecs_task_definition" "fargate_task" {
       }
     },
     {
-      "name" : "minio-service",
+      "name" : "minio",
       "image" : "minio/minio",
       "portMappings" : [
         {
@@ -93,7 +105,7 @@ resource "aws_ecs_task_definition" "fargate_task" {
         }
       ],
       "command": ["server", "/data --console-address ':9001'"]
-      "essential" : false,
+      "essential" : true,
       "environment" : [
         {
           "name" : "MINIO_ROOT_USER",
@@ -128,6 +140,18 @@ resource "aws_ecs_task_definition" "fargate_task" {
           "value" : "${var.senha}"
         },
         {
+          "name" : "URL_RABBITMQ",
+          "value" : "${var.url_rabbitmq}"
+        },
+        {
+          "name" : "URL_REDIS",
+          "value" : "${var.url_redis}"
+        },
+        {
+          "name" : "URL_MINIO",
+          "value" : "${var.url_minio}"
+        },
+        {
           "name" : "PYTHONUNBUFFERED",
           "value" : "1"
         }
@@ -156,6 +180,14 @@ resource "aws_ecs_task_definition" "fargate_task" {
           "value" : "${var.senha}"
         },
         {
+          "name" : "URL_RABBITMQ",
+          "value" : "${var.url_rabbitmq}"
+        },
+        {
+          "name" : "URL_REDIS",
+          "value" : "${var.url_redis}"
+        },
+        {
           "name" : "PYTHONUNBUFFERED",
           "value" : "1"
         }
@@ -182,6 +214,18 @@ resource "aws_ecs_task_definition" "fargate_task" {
         {
           "name" : "SENHA_PADRAO",
           "value" : "${var.senha}"
+        },
+        {
+          "name" : "URL_RABBITMQ",
+          "value" : "${var.url_rabbitmq}"
+        },
+        {
+          "name" : "URL_REDIS",
+          "value" : "${var.url_redis}"
+        },
+        {
+          "name" : "URL_MINIO",
+          "value" : "${var.url_minio}"
         },
         {
           "name" : "PYTHONUNBUFFERED",

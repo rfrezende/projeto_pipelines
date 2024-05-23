@@ -17,3 +17,18 @@ variable "senha" {
   default = "senha!dificil"
   type    = string
 }
+
+variable "url_rabbitmq" {
+  default = "localhost"
+  type    = string
+}
+
+variable "url_redis" {
+  default = "localhost"
+  type    = string
+}
+
+variable "url_minio" {
+  default = "localhost"
+  type    = string
+}
