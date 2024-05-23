@@ -12,6 +12,7 @@
 #
 import json
 import os
+import requests
 from rabbitmq_connection import new_connection as rabbit_con, declare_queue
 from minio_connection import new_connection as minio_con
 from redis_connection import new_connection as redis_con
@@ -83,7 +84,9 @@ def callback(ch, method, properties, body):
         url = minio_client.get_presigned_url('GET', bucket_name, objeto_relatorio)
         
         # A substituicao é porque a URL vem com a conexão usada, que é o nome do container do MinIO
-        url_externa = url.split('?')[0].replace('minio-service:9000', 'minio.projeto.ada')
+        get_ip_externo = requests.get('http://api.ipify.org')
+        ip_externo = get_ip_externo.text
+        url_externa = url.split('?')[0].replace('localhost', ip_externo)
         print(f'URL para o relatório: {url_externa}\n')
         
         os.remove(f'{caminho}{objeto_relatorio}')

@@ -9,7 +9,7 @@
 
 FROM python:3.12-alpine
 
-RUN pip install minio pika redis
+RUN pip install minio pika redis requests
 
 WORKDIR /scripts
 

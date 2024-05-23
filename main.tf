@@ -33,13 +33,20 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
 
 # Create a security group to allow traffic
 resource "aws_security_group" "sg_servicos_public" {
-  name_prefix = "ecs-service-"
+  name_prefix = "sg_servicos_public-"
   description = "Allow HTTP traffic to ECS service"
   vpc_id      = aws_vpc.vpc_relatorios_fraudes.id
 
   ingress { # MinIO
     from_port   = 9001
     to_port     = 9001
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  
+  ingress { # MinIO
+    from_port   = 9000
+    to_port     = 9000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -54,40 +61,6 @@ resource "aws_security_group" "sg_servicos_public" {
   ingress { # Redis
     from_port   = 8001
     to_port     = 8001
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_security_group" "sg_servicos_private" {
-  name_prefix = "ecs-service-"
-  description = "Allow HTTP traffic to ECS service"
-  vpc_id      = aws_vpc.vpc_relatorios_fraudes.id
-
-  ingress { # MinIO
-    from_port   = 9000
-    to_port     = 9000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress { # RabbitMQ
-    from_port   = 5672
-    to_port     = 5672
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress { # Redis
-    from_port   = 6379
-    to_port     = 6379
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -156,7 +129,7 @@ resource "aws_ecs_service" "sv_relatorios_antifraudes" {
 
   network_configuration {
     subnets         = [aws_subnet.sn_relatorios_fraudes.id]
-    security_groups = [aws_security_group.sg_servicos_public.id, aws_security_group.sg_servicos_private.id]
+    security_groups = [aws_security_group.sg_servicos_public.id]
     assign_public_ip = true
   }
 
@@ -165,63 +138,3 @@ resource "aws_ecs_service" "sv_relatorios_antifraudes" {
     namespace = aws_service_discovery_private_dns_namespace.dns_namespace_relatorios_fraudes.name
   }
 }
-
-# # Redis
-# resource "aws_ecs_service" "sv_redis" {
-#   name            = "sv-redis"
-#   cluster         = aws_ecs_cluster.relatorios_antifraudes.id
-#   task_definition = aws_ecs_task_definition.task_redis.arn
-#   desired_count   = 1
-#   launch_type     = "FARGATE"
-
-#   network_configuration {
-#     subnets         = [aws_subnet.sn_relatorios_fraudes.id]
-#     security_groups = [aws_security_group.sg_servicos_public.id, aws_security_group.sg_servicos_private.id]
-#     assign_public_ip = true
-#   }
-
-#   service_connect_configuration {
-#     enabled = true
-#     namespace = aws_service_discovery_private_dns_namespace.dns_namespace_relatorios_fraudes.name
-#   }
-# }
-
-# # MinIO
-# resource "aws_ecs_service" "sv_minio" {
-#   name            = "sv-minio"
-#   cluster         = aws_ecs_cluster.relatorios_antifraudes.id
-#   task_definition = aws_ecs_task_definition.task_minio.arn
-#   desired_count   = 1
-#   launch_type     = "FARGATE"
-
-#   network_configuration {
-#     subnets         = [aws_subnet.sn_relatorios_fraudes.id]
-#     security_groups = [aws_security_group.sg_servicos_public.id, aws_security_group.sg_servicos_private.id]
-#     assign_public_ip = true
-#   }
-
-#   service_connect_configuration {
-#     enabled = true
-#     namespace = aws_service_discovery_private_dns_namespace.dns_namespace_relatorios_fraudes.name
-#   }
-# }
-
-# # Aplicacoes
-# resource "aws_ecs_service" "sv_aplicacoes" {
-#   name            = "sv-aplicacoes"
-#   cluster         = aws_ecs_cluster.relatorios_antifraudes.id
-#   task_definition = aws_ecs_task_definition.task_aplicacoes.arn
-#   desired_count   = 1
-#   launch_type     = "FARGATE"
-#   depends_on = [ aws_ecs_service.sv_rabbitmq, aws_ecs_service.sv_redis, aws_ecs_service.sv_minio ]
-#   network_configuration {
-#     subnets         = [aws_subnet.sn_relatorios_fraudes.id]
-#     security_groups = [aws_security_group.sg_servicos_public.id, aws_security_group.sg_servicos_private.id]
-#     assign_public_ip = true
-#   }
-
-#   service_connect_configuration {
-#     enabled = true
-#     namespace = aws_service_discovery_private_dns_namespace.dns_namespace_relatorios_fraudes.name
-#   }
-# }
