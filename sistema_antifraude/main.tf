@@ -38,13 +38,6 @@ resource "aws_security_group" "sg_servicos_public" {
   vpc_id      = aws_vpc.vpc_relatorios_fraudes.id
 
   ingress { # MinIO
-    from_port   = 9001
-    to_port     = 9001
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  
-  ingress { # MinIO
     from_port   = 9000
     to_port     = 9000
     protocol    = "tcp"
