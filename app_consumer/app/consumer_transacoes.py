@@ -66,18 +66,18 @@ def callback(ch, method, properties, body):
         objeto_relatorio = f'relatorio_{nu_conta}_{timestamp_relatorio}.txt'
         
         with open(f'{caminho}{objeto_relatorio}', 'w') as f:
-            f.write(f'# Relatório de suspeita de fraude\n\n'
-                    f'- Conta: {nu_conta}\n\n- Transação suspeita: \n'
-                    f'  - Conta destino: {transacao_atual['conta_destino']}\n'
-                    f'  - Cidade:\t{transacao_atual['cidade']}\n'
-                    f'  - Valor:\tR$ {transacao_atual['valor']}\n'
-                    f'  - Timestamp:\t{transacao_atual['timestamp']}\n\n'
-                    f'- Transação anterior\n'
-                    f'  - Conta destino: {transacao_anterior['conta_destino']}\n'
-                    f'  - Cidade:\t{transacao_anterior['cidade']}\n'
-                    f'  - Valor:\tR$ {transacao_anterior['valor']}\n'
-                    f'  - Timestamp:\t{transacao_anterior['timestamp']}\n\n'
-                    f'- Intervalo entre as transações: {diferenca_de_horario}\n')
+            f.write(f"# Relatório de suspeita de fraude\n\n"
+                    f"- Conta: {nu_conta}\n\n- Transação suspeita: \n"
+                    f"  - Conta destino: {transacao_atual['conta_destino']}\n"
+                    f"  - Cidade:\t{transacao_atual['cidade']}\n"
+                    f"  - Valor:\tR$ {transacao_atual['valor']}\n"
+                    f"  - Timestamp:\t{transacao_atual['timestamp']}\n\n"
+                    f"- Transação anterior\n"
+                    f"  - Conta destino: {transacao_anterior['conta_destino']}\n"
+                    f"  - Cidade:\t{transacao_anterior['cidade']}\n"
+                    f"  - Valor:\tR$ {transacao_anterior['valor']}\n"
+                    f"  - Timestamp:\t{transacao_anterior['timestamp']}\n\n"
+                    f"- Intervalo entre as transações: {diferenca_de_horario}\n")
         
         minio_client.fput_object(bucket_name, objeto_relatorio, f'{caminho}{objeto_relatorio}')
         

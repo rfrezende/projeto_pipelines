@@ -11,12 +11,12 @@ FROM python:3.12-alpine
 
 RUN pip install minio pika redis
 
-WORKDIR /scripts
+WORKDIR /app
 
-COPY ../scripts/minio_connection.py .
-COPY ../scripts/rabbitmq_connection.py .
-COPY ../scripts/redis_connection.py .
-COPY ../scripts/print_log.py .
-COPY ../scripts/preparar_ambiente.py app.py
+COPY ../app/minio_connection.py .
+COPY ../app/rabbitmq_connection.py .
+COPY ../app/redis_connection.py .
+COPY ../app/print_log.py .
+COPY ../app/preparar_ambiente.py app.py
 
 ENTRYPOINT python app.py

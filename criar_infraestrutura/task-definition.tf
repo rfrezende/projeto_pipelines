@@ -129,7 +129,7 @@ resource "aws_ecs_task_definition" "task_rabbitmq" {
     {
       "name" : "preparar-ambiente",
       "image" : "rfrezende/app-projeto-ada:preparar-ambiente",
-      "essential" : true,
+      "essential" : false,
       "environment" : [
         {
           "name" : "USUARIO_PADRAO",
@@ -169,7 +169,7 @@ resource "aws_ecs_task_definition" "task_rabbitmq" {
     {
       "name" : "producer",
       "image" : "rfrezende/app-projeto-ada:producer",
-      "essential" : true,
+      "essential" : false,
       "environment" : [
         {
           "name" : "USUARIO_PADRAO",
@@ -205,7 +205,7 @@ resource "aws_ecs_task_definition" "task_rabbitmq" {
     {
       "name" : "consumer",
       "image" : "rfrezende/app-projeto-ada:consumer",
-      "essential" : true,
+      "essential" : false,
       "environment" : [
         {
           "name" : "USUARIO_PADRAO",

@@ -44,6 +44,13 @@ resource "aws_security_group" "sg_servicos_public" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress { # MinIO
+    from_port   = 9001
+    to_port     = 9001
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   ingress { # RabbitMQ
     from_port   = 15672
     to_port     = 15672
@@ -112,7 +119,6 @@ resource "aws_cloudwatch_log_group" "logs_projeto" {
   retention_in_days = 30
 }
 
-# RabbitMQ
 resource "aws_ecs_service" "sv_relatorios_antifraudes" {
   name            = "sv-relatorios-antifraudes"
   cluster         = aws_ecs_cluster.relatorios_antifraudes.id
